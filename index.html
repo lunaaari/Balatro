@@ -142,39 +142,39 @@
             });
         }
 
-        function verificarPremio() {
-            if (seleccionadas.length !== 2) {
-                document.getElementById("resultado").innerText = "Selecciona dos cartas";
-                return;
-            }
+       function verificarPremio() {
+    if (seleccionadas.length !== 2) {
+        document.getElementById("resultado").innerText = "Selecciona dos cartas";
+        return;
+    }
 
-            if (!verificarIntentos()) {
-                document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
-                return;
-            }
+    if (!verificarIntentos()) {
+        document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
+        return;
+    }
 
-            let combinacion1 = `${seleccionadas[0]},${seleccionadas[1]}`;
-            let combinacion2 = `${seleccionadas[1]},${seleccionadas[0]}`;
+    let combinacion1 = `${seleccionadas[0]},${seleccionadas[1]}`;
+    let combinacion2 = `${seleccionadas[1]},${seleccionadas[0]}`;
 
-            let premios = {
-                "1,6": "Visita con sorpresa",
-                "8,5": "Invitación para comer helado",
-                "10,7": "Un regalo",
-                "12,3": "Un juego virtual",
-                "4,9": "Ver Arcane juntos",
-                "2,11": "Una foto mía"
-            };
+    let premios = {
+        "1,6": "Visita con sorpresa",
+        "8,5": "Invitación para comer helado",
+        "10,7": "Un regalo",
+        "12,3": "Un juego virtual",
+        "4,9": "Ver Arcane juntos",
+        "2,11": "Una foto mía"
+    };
 
-            let resultado = premios[combinacion1] || premios[combinacion2];
+    let resultado = premios[combinacion1] || premios[combinacion2];
 
-            if (resultado) {
-                document.getElementById("resultado").innerText = "¡Ganaste! Premio: " + resultado;
-            } else {
-                document.getElementById("resultado").innerText = "Esta combinación no genera premio.";
-            }
+    if (resultado) {
+        document.getElementById("resultado").innerText = "¡Ganaste! Premio: " + resultado;
+    } else {
+        document.getElementById("resultado").innerText = "Esta combinación no genera premio.";
+    }
 
-            actualizarIntentos();
-        }
+    actualizarIntentos();
+}
 
         function obtenerFechaActual() {
             let fecha = new Date();
