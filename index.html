@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrick Balatro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            background: url('minimalistic-wallpapers-v0-mf3kc4evcztd1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 3px 3px 5px black;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card.selected {
+            transform: scale(1.2);
+        }
+
+        #selected-cards {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #selected-cards img {
+            width: 100px;
+            height: 150px;
+        }
+
+        #probar-suerte {
+            font-size: 1.5em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ffcc00;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 50px;
+        }
+
+        #probar-suerte:hover {
+            background-color: #ffaa00;
+        }
+
+        #probar-suerte:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        #resultado {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Patrick Balatro</h1>
+    <div class="container">
+        <p>Selecciona dos cartas:</p>
+        <div id="selected-cards"></div>
+        <button id="probar-suerte" onclick="verificarPremio()">Probar suerte</button>
+        <p id="resultado"></p>
+    </div>
+
+    <div class="card-container" id="card-container"></div>
+
+    <script>
+        const cartas = [1,2,3,4,5,6,7,8,9,10,11,12];
+        const seleccionadas = [];
+
+        function cargarCartas() {
+            const container = document.getElementById("card-container");
+            container.innerHTML = "";
+            cartas.forEach(num => {
+                let img = document.createElement("img");
+                img.src = `cartas/${num}.png`;
+                img.classList.add("card");
+                img.dataset.value = num;
+                img.onclick = () => seleccionarCarta(img);
+                container.appendChild(img);
+            });
+        }
+
+        function seleccionarCarta(img) {
+            if (seleccionadas.length < 2 && !seleccionadas.includes(img.dataset.value)) {
+                seleccionadas.push(img.dataset.value);
+                img.classList.add("selected");
+                actualizarCartasSeleccionadas();
+            } else if (seleccionadas.includes(img.dataset.value)) {
+                seleccionadas.splice(seleccionadas.indexOf(img.dataset.value), 1);
+                img.classList.remove("selected");
+                actualizarCartasSeleccionadas();
+            }
+        }
+
+        function actualizarCartasSeleccionadas() {
+            const container = document.getElementById("selected-cards");
+            container.innerHTML = "";
+            seleccionadas.forEach(num => {
+                let img = document.createElement("img");
+                img.src = `cartas/${num}.png`;
+                container.appendChild(img);
+            });
+        }
+
+        function verificarPremio() {
+            if (seleccionadas.length !== 2) {
+                document.getElementById("resultado").innerText = "Selecciona dos cartas";
+                return;
+            }
+
+            if (!verificarIntentos()) {
+                document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
+                return;
+            }
+
+            let combinacion1 = `${seleccionadas[0]},${seleccionadas[1]}`;
+            let combinacion2 = `${seleccionadas[1]},${seleccionadas[0]}`;
+
+            let premios = {
+                "1,6": "Visita con sorpresa",
+                "8,5": "Invitación para comer helado",
+                "10,7": "Un regalo",
+                "12,3": "Un juego virtual",
+                "4,9": "Ver Arcane juntos",
+                "2,11": "Una foto mía"
+            };
+
+            let resultado = premios[combinacion1] || premios[combinacion2];
+
+            if (resultado) {
+                document.getElementById("resultado").innerText = "¡Ganaste! Premio: " + resultado;
+            } else {
+                document.getElementById("resultado").innerText = "Esta combinación no genera premio.";
+            }
+
+            actualizarIntentos();
+        }
+
+        function obtenerFechaActual() {
+            let fecha = new Date();
+            return `${fecha.getFullYear()}-${fecha.getMonth() + 1}-${fecha.getDate()}`;
+        }
+
+        function verificarIntentos() {
+            let fechaActual = obtenerFechaActual();
+            let datosGuardados = JSON.parse(localStorage.getItem("intentos")) || { fecha: "", intentos: 0 };
+
+            if (datosGuardados.fecha !== fechaActual) {
+                localStorage.setItem("intentos", JSON.stringify({ fecha: fechaActual, intentos: 0 }));
+                return true;
+            }
+
+            return datosGuardados.intentos < 2;
+        }
+
+        function actualizarIntentos() {
+            let fechaActual = obtenerFechaActual();
+            let datosGuardados = JSON.parse(localStorage.getItem("intentos")) || { fecha: "", intentos: 0 };
+
+            if (datosGuardados.fecha !== fechaActual) {
+                datosGuardados = { fecha: fechaActual, intentos: 0 };
+            }
+
+            datosGuardados.intentos += 1;
+            localStorage.setItem("intentos", JSON.stringify(datosGuardados));
+
+            if (datosGuardados.intentos >= 2) {
+                document.getElementById("probar-suerte").disabled = true;
+                document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
+            }
+        }
+
+        function verificarBotonIntentos() {
+            let datosGuardados = JSON.parse(localStorage.getItem("intentos")) || { fecha: "", intentos: 0 };
+            if (datosGuardados.intentos >= 2) {
+                document.getElementById("probar-suerte").disabled = true;
+                document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
+            }
+        }
+
+        cargarCartas();
+        verificarBotonIntentos();
+    </script>
+
+</body>
+</html>

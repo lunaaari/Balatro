@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrick Balatro</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            background: url('minimalistic-wallpapers-v0-mf3kc4evcztd1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            text-shadow: 3px 3px 5px black;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cartas-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .carta {
+            width: 80px;
+            height: auto;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .carta:hover {
+            transform: scale(1.1);
+        }
+
+        .seleccionada {
+            border: 3px solid yellow;
+            border-radius: 10px;
+        }
+
+        .boton-probar {
+            font-size: 1.5em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ffcc00;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .boton-probar:hover {
+            background-color: #ffaa00;
+        }
+
+        .animacion-exito {
+            animation: parpadeo 0.5s infinite alternate;
+        }
+
+        @keyframes parpadeo {
+            from { transform: scale(1); }
+            to { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Patrick Balatro</h1>
+    <div class="container">
+        <p>Selecciona dos cartas:</p>
+        <div class="cartas-grid" id="cartasContainer"></div>
+        <button class="boton-probar" onclick="verificarPremio()">Probar suerte</button>
+        <p id="resultado"></p>
+    </div>
+
+    <script>
+        let seleccionadas = [];
+        function cargarCartas() {
+            let container = document.getElementById("cartasContainer");
+            for (let i = 1; i <= 12; i++) {
+                let img = document.createElement("img");
+                img.src = `Cartas/${i}.jpg`;
+                img.classList.add("carta");
+                img.dataset.valor = i;
+                img.onclick = () => seleccionarCarta(img);
+                container.appendChild(img);
+            }
+        }
+
+        function seleccionarCarta(img) {
+            let valor = parseInt(img.dataset.valor);
+            if (seleccionadas.includes(valor)) {
+                seleccionadas = seleccionadas.filter(num => num !== valor);
+                img.classList.remove("seleccionada");
+            } else if (seleccionadas.length < 2) {
+                seleccionadas.push(valor);
+                img.classList.add("seleccionada");
+            }
+        }
+
+        function verificarPremio() {
+            if (seleccionadas.length < 2) {
+                document.getElementById("resultado").innerText = "Debes seleccionar dos cartas.";
+                return;
+            }
+
+            let [carta1, carta2] = seleccionadas;
+            let fechaHoy = new Date().toLocaleDateString();
+            let intentos = JSON.parse(localStorage.getItem("intentos")) || {};
+
+            if (!intentos[fechaHoy]) {
+                intentos[fechaHoy] = 0;
+            }
+
+            if (intentos[fechaHoy] >= 2) {
+                document.getElementById("resultado").innerText = "Ya usaste tus 2 intentos hoy. ¡Intenta mañana!";
+                return;
+            }
+
+            intentos[fechaHoy]++;
+            localStorage.setItem("intentos", JSON.stringify(intentos));
+
+            let premios = {
+                "1,6": "Visita con sorpresa",
+                "8,5": "Invitación para comer helado",
+                "10,7": "Un regalo",
+                "12,3": "Un juego virtual",
+                "4,9": "Ver Arcane juntos",
+                "2,11": "Una foto mía"
+            };
+
+            let combinacion1 = `${carta1},${carta2}`;
+            let combinacion2 = `${carta2},${carta1}`;
+
+            let resultado = document.getElementById("resultado");
+            if (premios[combinacion1] || premios[combinacion2]) {
+                resultado.innerText = "¡Ganaste! Premio: " + (premios[combinacion1] || premios[combinacion2]);
+                resultado.classList.add("animacion-exito");
+            } else {
+                resultado.innerText = "No hay premio esta vez. ¡Intenta de nuevo!";
+                resultado.classList.remove("animacion-exito");
+            }
+
+            seleccionadas = [];
+            document.querySelectorAll(".carta").forEach(img => img.classList.remove("seleccionada"));
+        }
+
+        window.onload = cargarCartas;
+    </script>
+</body>
+</html>
