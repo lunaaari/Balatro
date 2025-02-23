@@ -112,7 +112,7 @@
             container.innerHTML = "";
             cartas.forEach(num => {
                 let img = document.createElement("img");
-                img.src = `Cartas/${num}.png`;  // 🔹 Cambio aquí
+                img.src = `/Balatro/Cartas/${num}.png`;  // 🔹 RUTA ABSOLUTA CORREGIDA
                 img.classList.add("card");
                 img.dataset.value = num;
                 img.onclick = () => seleccionarCarta(img);
@@ -137,7 +137,7 @@
             container.innerHTML = "";
             seleccionadas.forEach(num => {
                 let img = document.createElement("img");
-                img.src = `Cartas/${num}.png`;  // 🔹 Cambio aquí
+                img.src = `/Balatro/Cartas/${num}.png`;  // 🔹 RUTA ABSOLUTA CORREGIDA
                 container.appendChild(img);
             });
         }
