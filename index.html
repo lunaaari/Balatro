@@ -180,12 +180,13 @@
             let fechaActual = obtenerFechaActual();
             let datosGuardados = JSON.parse(localStorage.getItem("intentos")) || { fecha: "", intentos: 0 };
 
+         
             if (datosGuardados.fecha !== fechaActual) {
                 localStorage.setItem("intentos", JSON.stringify({ fecha: fechaActual, intentos: 0 }));
                 return true;
             }
 
-            return datosGuardados.intentos < 3;
+            return datosGuardados.intentos < 2;  // Máximo 2 intentos por día
         }
 
         function actualizarIntentos() {
@@ -199,8 +200,8 @@
             datosGuardados.intentos += 1;
             localStorage.setItem("intentos", JSON.stringify(datosGuardados));
 
-            // Si ya ha hecho 3 intentos, bloquear el botón
-            if (datosGuardados.intentos >= 3) {
+           
+            if (datosGuardados.intentos >= 2) {
                 document.getElementById("probar-suerte").disabled = true;
                 document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
             }
@@ -208,7 +209,9 @@
 
         function verificarBotonIntentos() {
             let datosGuardados = JSON.parse(localStorage.getItem("intentos")) || { fecha: "", intentos: 0 };
-            if (datosGuardados.intentos >= 3) {
+
+            
+            if (datosGuardados.intentos >= 2) {
                 document.getElementById("probar-suerte").disabled = true;
                 document.getElementById("resultado").innerText = "Has alcanzado el límite de intentos por hoy.";
             }
@@ -220,3 +223,4 @@
 
 </body>
 </html>
+
